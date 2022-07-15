@@ -8,17 +8,18 @@ import (
 	"github.com/gookit/color"
 )
 
+type Player struct {
+	letter   string
+	position int
+	turn     int
+}
+
 type Game struct {
 	player_quant int
 	//dificulty   int
 	table   [63]int
 	players [4]Player
-}
-
-type Player struct {
-	letter   string
-	position int
-	turn     int
+	winner  string
 }
 
 func get_player_quant(g *Game) {
@@ -56,9 +57,9 @@ func print_table(g *Game) {
 	for index := range g.table {
 		index += 1
 		if index >= 10 {
-			color.BgRed.Print(index)
+			color.BgRed.Printf(" %d ", index)
 		} else {
-			color.BgRed.Print("0", index)
+			color.BgRed.Printf(" 0%d ", index)
 		}
 		color.Print(" ")
 		if index != 0 && index%10 == 0 {
@@ -72,8 +73,10 @@ func init_players(g *Game) {
 	for i := 0; i < g.player_quant; i++ {
 		fmt.Printf("\t Player %X letter: ", i+1)
 		fmt.Scan(&name)
+
+		//Init player =>
 		g.players[i].letter = name
-		g.players[i].turn = i
+		g.players[i].turn = 0
 		g.players[i].position = 0
 	}
 }
@@ -84,13 +87,58 @@ func clear_terminal() {
 	tm.Flush()
 }
 
+func throw_dice() int {
+	return rand.Intn(7) + 1
+}
+
+func move_player(dice int, p *Player) {
+	p.position += dice
+}
+
+func turns(op string, g *Game) {
+	for i := 0; i < g.player_quant; i++ {
+		n := -1
+		if op == "sum" {
+			n = 1
+		}
+		g.players[i].turn += n
+	}
+}
+
+func game_loop(g *Game) {
+	for g.winner == "" {
+		//Turns =>
+		turns("sum", g)
+		for i := 0; i < g.player_quant; i++ {
+			if g.players[i].turn < 1 {
+				continue
+			}
+
+			//Each turn=>
+			//print_table(g) //Print table
+			for i := 0; i < g.player_quant; i++ { //Show info
+				fmt.Println(g.players)
+			}
+
+			dice := throw_dice()             //Throw a dice
+			move_player(dice, &g.players[i]) //Move correct player
+			//Aply special cases (turns +/-1 || moves +3/-2)
+
+			if g.players[i].position > 62 { //Check passed
+				move_player(-5, &g.players[i])
+			} else if g.players[i].position == 62 { //Check win
+				g.winner = g.players[i].letter
+			}
+		}
+		turns("sub", g)
+	}
+}
+
 func init_game(g *Game) {
 	clear_terminal()
 
-	//Start the game wiht an advice =>
-	color.BgYellow.Println(" The game start... ")
-
 	//Get configuration (player_quant, dificulty) =>
+	color.BgHiYellow.Println("Game configuration: ")
 	get_player_quant(g)
 	//TO_DO => get_dificulty(g)
 
@@ -98,6 +146,8 @@ func init_game(g *Game) {
 	init_table(g)
 	init_players(g)
 
+	//Start game loop =>
+	game_loop(g)
 }
 
 func ask_for_reset() bool {
