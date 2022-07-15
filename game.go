@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"time"
 
 	tm "github.com/buger/goterm"
 	"github.com/gookit/color"
@@ -17,11 +18,19 @@ type Player struct {
 type Game struct {
 	player_quant int
 	//dificulty   int
-	table   [63]int
-	players [4]Player
-	winner  string
+	table        [63]int
+	players      [4]Player
+	winner       string
+	turn_counter int
 }
 
+func clear_terminal() {
+	tm.Clear()
+	tm.MoveCursor(0, 0)
+	tm.Flush()
+}
+
+//Init functions =>
 func get_player_quant(g *Game) {
 	fmt.Print("Number of player (2 - 4): ")
 	n := 0
@@ -65,6 +74,22 @@ func init_players(g *Game) {
 	}
 }
 
+func init_game(g *Game) {
+	clear_terminal()
+
+	//Get configuration (player_quant, dificulty) =>
+	color.BgHiYellow.Println("Game configuration: ")
+	get_player_quant(g)
+	//TO_DO => get_dificulty(g)
+
+	//init table and players =>
+	init_table(g)
+	init_players(g)
+}
+
+//Init functions <=
+
+//Game loop functions =>
 func print_case(index int, num int) {
 	if index+1 >= 10 {
 		if num != 0 {
@@ -113,7 +138,21 @@ func turns(op string, g *Game) {
 	}
 }
 
+func throw_dice() int {
+	n := rand.Intn(6) + 1
+	//color.BgGreen.Print("\nPress enter to throw the dice...")
+	//fmt.Scanln()
+	time.Sleep(3 * time.Millisecond)
+	clear_terminal()
+	return n
+}
+
+func move_player(dice int, p *Player) {
+	p.position += dice
+}
+
 func game_loop(g *Game) {
+	clear_terminal()
 	for g.winner == "" {
 		//Turns =>
 		turns("sum", g)
@@ -121,59 +160,45 @@ func game_loop(g *Game) {
 			if g.players[i].turn < 1 {
 				continue
 			}
+			//Each active turn =>
+			color.BgHiYellow.Printf(" Turn of %s  \n\n", g.players[i].letter)
+			print_table(g)       //Print table
+			dice := throw_dice() //Throw a dice
+			color.BgHiYellow.Printf(" The dice was %o |", dice)
 
-			//Each turn=>
-			//print_table(g) //Print table
-			for i := 0; i < g.player_quant; i++ { //Show info
-				fmt.Println(g.players)
-			}
-
-			dice := throw_dice()             //Throw a dice
 			move_player(dice, &g.players[i]) //Move correct player
-			//Aply special cases (turns +/-1 || moves +3/-2)
+			//Aply special cases (turns +/- 1 || moves +3/-2)
 
 			if g.players[i].position > 62 { //Check passed
 				move_player(-5, &g.players[i])
 			} else if g.players[i].position == 62 { //Check win
+				color.Green.Println("\nThe winner is ", g.players[i].letter, "!!")
 				g.winner = g.players[i].letter
+				break
 			}
 		}
 		turns("sub", g)
 	}
 }
 
-func init_game(g *Game) {
-	clear_terminal()
+//Game loop functions <=
 
-	//Get configuration (player_quant, dificulty) =>
-	color.BgHiYellow.Println("Game configuration: ")
-	get_player_quant(g)
-	//TO_DO => get_dificulty(g)
-
-	//init table and players =>
-	init_table(g)
-	init_players(g)
-
-	//Start game loop =>
-	game_loop(g)
-}
-
-func ask_for_reset() bool {
+//For reset =>
+func ask_for_reset(sp *bool) {
 	input := ""
 	for input != "Y" && input != "N" {
-		fmt.Print("\nDo you want play again?[Y/N]: ")
+		color.BgRed.Print("\n Do you want play again?[Y/N]: ")
 		fmt.Scan(&input)
 	}
-
-	return input == "Y"
+	*sp = input == "Y"
 }
 
 func main() {
-	for {
-		game := Game{}
-		init_game(&game)
-		if !ask_for_reset() {
-			break
-		}
+	still_playing := true
+	for still_playing {
+		game := Game{}                //Create new game
+		init_game(&game)              //Init game values
+		game_loop(&game)              //Start game loop
+		ask_for_reset(&still_playing) //Ask for reset => end program or reset
 	}
 }
