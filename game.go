@@ -23,6 +23,7 @@ type Game struct {
 	turn_counter int
 }
 
+//Auxiliar functions =>
 func clear_terminal() {
 	tm.Clear()
 	tm.MoveCursor(0, 0)
@@ -60,16 +61,18 @@ func (g *Game) init_table() {
 	}
 }
 
+func (p *Player) init_player(name string) {
+	p.letter = name
+	p.turn = 1
+	p.position = 0
+}
+
 func (g *Game) init_players() {
 	name := ""
 	for i := 0; i < g.player_quant; i++ {
 		fmt.Printf("\t Player %X letter: ", i+1)
 		fmt.Scan(&name)
-
-		//Init player =>
-		g.players[i].letter = name
-		g.players[i].turn = 0
-		g.players[i].position = 0
+		g.players[i].init_player(name)
 	}
 }
 
@@ -85,8 +88,6 @@ func (g *Game) init() {
 	g.init_table()
 	g.init_players()
 }
-
-//Init functions <=
 
 //Game loop functions =>
 func print_case(index int, num int) {
@@ -132,14 +133,12 @@ func (g *Game) print_table() {
 	fmt.Println()
 }
 
-func (g *Game) turns(op string) {
-	for i := 0; i < g.player_quant; i++ {
-		n := -1
-		if op == "sum" {
-			n = 1
-		}
-		g.players[i].turn += n
+func (p *Player) turns(op string) {
+	n := 1
+	if op == "sub" {
+		n = 1
 	}
+	p.turn += n
 }
 
 func throw_dice() int {
@@ -157,7 +156,7 @@ func (g *Game) move_player(dice int, index int) {
 
 func (g *Game) apply_special_cases(index int) {
 	if g.table[g.players[index].position] != 0 {
-		return
+		g.players[index].turn += -1
 	}
 }
 
@@ -165,14 +164,15 @@ func (g *Game) start_loop() {
 	clear_terminal()
 	for g.winner == "" {
 		//Turns =>
-		g.turns("sum")
 		for i := 0; i < g.player_quant; i++ {
 			if g.players[i].turn < 1 {
+				g.players[i].turns("sum")
 				continue
 			}
 			color.BgHiYellow.Printf(" Turn of %s  \n\n", g.players[i].letter) //Each active turn =>
 			g.print_table()                                                   //Print table
-			dice := throw_dice()                                              //Throw a dice
+			fmt.Println(g.players)
+			dice := throw_dice() //Throw a dice
 			color.BgHiYellow.Printf(" The dice was %o |", dice)
 			g.move_player(dice, i)   //Move correct player
 			g.apply_special_cases(i) //Aply special cases (turns +/- 1 || moves +3/-2)
@@ -185,11 +185,8 @@ func (g *Game) start_loop() {
 				break
 			}
 		}
-		g.turns("sub")
 	}
 }
-
-//Game loop functions <=
 
 //For reset =>
 func (g *Game) ask_for_reset(sp *bool) {
