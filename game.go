@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"time"
 
 	tm "github.com/buger/goterm"
 	"github.com/gookit/color"
@@ -17,10 +18,10 @@ type Player struct {
 type Game struct {
 	player_quant int
 	//dificulty   int
-	table        [63]int
-	players      [4]Player
-	winner       string
-	turn_counter int
+	table     [63]int
+	players   [4]Player
+	winner    string
+	auto_dice bool
 }
 
 //Auxiliar functions =>
@@ -76,6 +77,15 @@ func (g *Game) init_players() {
 	}
 }
 
+func (g *Game) get_auto_dice() {
+	input := ""
+	for input != "Y" && input != "N" {
+		color.BgYellow.Print("Auto dice? [Y/N]: ")
+		fmt.Scan(&input)
+	}
+	g.auto_dice = input == "Y"
+}
+
 func (g *Game) init() {
 	clear_terminal()
 
@@ -83,10 +93,11 @@ func (g *Game) init() {
 	color.BgHiYellow.Println("Game configuration: ")
 	g.get_player_quant()
 	//TO_DO => get_dificulty( )
-
-	//init table and players =>
 	g.init_table()
 	g.init_players()
+
+	//init table and players =>
+	g.get_auto_dice()
 }
 
 //Game loop functions =>
@@ -141,12 +152,20 @@ func (p *Player) turns(op string) {
 	p.turn += n
 }
 
-func throw_dice() int {
+func throw_dice(auto bool) int {
 	n := rand.Intn(6) + 1
-	color.BgGreen.Print("\nPress enter to throw the dice...")
-	fmt.Scanln()
-	//time.Sleep(3 * time.Millisecond)
+
+	if auto {
+		time.Sleep(1 * time.Second)
+
+	} else {
+		color.BgGreen.Print("\nPress enter to throw the dice...")
+		fmt.Scanln()
+
+	}
+
 	clear_terminal()
+	color.BgHiYellow.Printf(" The dice was %o |", n)
 	return n
 }
 
@@ -165,25 +184,23 @@ func (g *Game) start_loop() {
 	for g.winner == "" {
 		//Turns =>
 		for i := 0; i < g.player_quant; i++ {
-			if g.players[i].turn < 1 {
+			if g.players[i].turn < 1 { //Check turn
 				g.players[i].turns("sum")
 				continue
 			}
 			color.BgHiYellow.Printf(" Turn of %s  \n\n", g.players[i].letter) //Each active turn =>
 			g.print_table()                                                   //Print table
-			fmt.Println(g.players)
-			dice := throw_dice() //Throw a dice
-			color.BgHiYellow.Printf(" The dice was %o |", dice)
-			g.move_player(dice, i)   //Move correct player
-			g.apply_special_cases(i) //Aply special cases (turns +/- 1 || moves +3/-2)
-
-			if g.players[i].position > 62 { //Check passed
+			dice := throw_dice(g.auto_dice)                                   //Throw a dice
+			g.move_player(dice, i)                                            //Move correct player
+			if g.players[i].position > 62 {                                   //Check passed
 				g.move_player(-5, i)
 			} else if g.players[i].position == 62 { //Check win
 				color.Green.Println("\nThe winner is ", g.players[i].letter, "!!")
 				g.winner = g.players[i].letter
+				g.print_table()
 				break
 			}
+			g.apply_special_cases(i) //Aply special cases (turns +/- 1 || moves +3/-2)
 		}
 	}
 }
