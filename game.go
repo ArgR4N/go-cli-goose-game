@@ -31,7 +31,6 @@ func get_player_quant(g *Game) {
 		fmt.Scan(&n)
 	}
 	g.player_quant = n
-
 }
 
 func get_random_case() int {
@@ -53,21 +52,6 @@ func init_table(g *Game) {
 	}
 }
 
-func print_table(g *Game) {
-	for index := range g.table {
-		index += 1
-		if index >= 10 {
-			color.BgRed.Printf(" %d ", index)
-		} else {
-			color.BgRed.Printf(" 0%d ", index)
-		}
-		color.Print(" ")
-		if index != 0 && index%10 == 0 {
-			fmt.Print("\n\n")
-		}
-	}
-}
-
 func init_players(g *Game) {
 	name := ""
 	for i := 0; i < g.player_quant; i++ {
@@ -81,15 +65,41 @@ func init_players(g *Game) {
 	}
 }
 
-func clear_terminal() {
-	tm.Clear()
-	tm.MoveCursor(0, 0)
-	tm.Flush()
+func print_case(index int, num int) {
+	if index+1 >= 10 {
+		if num != 0 {
+			color.BgRed.Printf(" %d ", index+1)
+		} else {
+			color.BgGray.Printf(" %d ", index+1)
+		}
+	} else {
+		if num != 0 {
+			color.BgRed.Printf(" 0%d ", index+1)
+		} else {
+			color.BgGray.Printf(" 0%d ", index+1)
+		}
+	}
 }
 
-func throw_dice() int {
-	return rand.Intn(7) + 1
-}
+func print_table(g *Game) {
+	not_player := false
+	for index, elm := range g.table {
+		for i := 0; i < g.player_quant; i++ {
+			if g.players[i].position == index && !not_player {
+				color.BgYellow.Printf(" %s ", g.players[i].letter)
+				color.Print(" ")
+				not_player = true
+			}
+		}
+		if !not_player {
+			print_case(index, elm)
+			color.Print(" ")
+		}
+		if (index+1)%10 == 0 { //New line
+			fmt.Print("\n\n")
+		}
+		not_player = false
+	}
 
 func move_player(dice int, p *Player) {
 	p.position += dice
