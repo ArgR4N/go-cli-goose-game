@@ -100,9 +100,7 @@ func print_table(g *Game) {
 		}
 		not_player = false
 	}
-
-func move_player(dice int, p *Player) {
-	p.position += dice
+	fmt.Println()
 }
 
 func turns(op string, g *Game) {
