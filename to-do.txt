@@ -1,0 +1,10 @@
+- Print of table (game ui) => 
+	- Spiral algorithm for print ⭕
+	- Style for each case (when empty or with n players in or special) ⭕
+
+- Game loop (game function) =>
+	- Turns ✅
+	- Special cases ⭕
+-Extra =>
+	- Make tests for develop the sipral algorithm ⭕
+
