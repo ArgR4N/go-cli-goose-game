@@ -56,6 +56,15 @@ func get_random_case() int {
 	}
 }
 
+func (g *Game) get_auto_dice() {
+	input := ""
+	for input != "Y" && input != "N" {
+		color.BgYellow.Print("Auto dice? [Y/N]: ")
+		fmt.Scan(&input)
+	}
+	g.auto_dice = input == "Y"
+}
+
 func (g *Game) init_table() {
 	for index := range g.table {
 		g.table[index] = get_random_case()
@@ -75,15 +84,6 @@ func (g *Game) init_players() {
 		fmt.Scan(&name)
 		g.players[i].init_player(name)
 	}
-}
-
-func (g *Game) get_auto_dice() {
-	input := ""
-	for input != "Y" && input != "N" {
-		color.BgYellow.Print("Auto dice? [Y/N]: ")
-		fmt.Scan(&input)
-	}
-	g.auto_dice = input == "Y"
 }
 
 func (g *Game) init() {
@@ -188,11 +188,11 @@ func (g *Game) start_loop() {
 				g.players[i].turns("sum")
 				continue
 			}
-			color.BgHiYellow.Printf(" Turn of %s  \n\n", g.players[i].letter) //Each active turn =>
-			g.print_table()                                                   //Print table
-			dice := throw_dice(g.auto_dice)                                   //Throw a dice
-			g.move_player(dice, i)                                            //Move correct player
-			if g.players[i].position > 62 {                                   //Check passed
+			color.BgYellow.Printf(" Turn of %s  \n\n", g.players[i].letter) //Each active turn =>
+			g.print_table()                                                 //Print table
+			dice := throw_dice(g.auto_dice)                                 //Throw a dice
+			g.move_player(dice, i)                                          //Move correct player
+			if g.players[i].position > 62 {                                 //Check passed
 				g.move_player(-5, i)
 			} else if g.players[i].position == 62 { //Check win
 				color.Green.Println("\nThe winner is ", g.players[i].letter, "!!")
