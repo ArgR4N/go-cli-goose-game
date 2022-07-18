@@ -5,6 +5,7 @@
 - Game loop (game function) =>
 	- Turns ✅
 	- Special cases ⭕
+
 -Extra =>
-	- Make tests for develop the sipral algorithm ⭕
+	- ❗ Make tests for develop the sipral algorithm ⭕ 
 
