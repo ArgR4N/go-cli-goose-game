@@ -170,13 +170,22 @@ func throw_dice(auto bool) int {
 }
 
 func (g *Game) move_player(dice int, index int) {
-	g.players[index].position += dice
+	for i := 0; i < abs(dice); i++ {
+		if i != 0 { //Don´t wait in the first 'step'
+			time.Sleep(500 * time.Millisecond)
+		}
+		clear_terminal()
+		g.players[index].position += dice / abs(dice)
+		g.print_table(dice, g.players[index])
+	}
 }
 
-func (g *Game) apply_special_cases(index int) {
-	if g.table[g.players[index].position] != 0 {
-		g.players[index].turn += -1
-	}
+func (g *Game) apply_special_cases(index int, player *Player) {
+	//TO DO
+	// -1 =>Pierde un turno
+	// -2 => Retrocede 2 casillas
+	// 1 => Gana un turno
+	// 2 => Avanza 3 casillas
 }
 
 func (g *Game) start_loop() {
