@@ -31,6 +31,13 @@ func clear_terminal() {
 	tm.Flush()
 }
 
+func abs(n int) int {
+	if n < 0 {
+		return n * -1
+	}
+	return n
+}
+
 //Init functions =>
 func (g *Game) get_player_quant() {
 	fmt.Print("Number of player (2 - 4): ")
