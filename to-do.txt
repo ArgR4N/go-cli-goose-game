@@ -7,8 +7,8 @@
 
 - Game loop (game function) =>
 	- Turns ✅
-	- Special cases ⭕
-	- Exceed the end ⭕
+	- Special cases ✅
+	- Exceed the end ✅
 
 -Extra =>
 	- ❗ Make tests for develop the sipral algorithm ⭕ 

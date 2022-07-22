@@ -61,7 +61,6 @@ func get_random_case() int {
 		for n == 0 {
 			n = rand.Intn(5) - 2
 		}
-		fmt.Println(n)
 		return n
 	}
 }
@@ -220,12 +219,6 @@ func (g *Game) apply_special_cases(index int) {
 		}
 		g.turn_move = true
 	}
-	//g.apply_special_cases(index)
-	//TO DO
-	// -1 =>Pierde un turno => p.turn -= 1
-	// -2 => Retrocede 2 casillas => mueve -2 casillas
-	// 1 => Gana un turno => Juega de nuevo (tira dado y mueve n casillas)
-	// 2 => Avanza 3 casillas => Mueve +3 casillas
 }
 
 func (g *Game) start_loop() {
@@ -238,17 +231,15 @@ func (g *Game) start_loop() {
 				g.players[i].turns("sum")
 				continue
 			}
-			dice := throw_dice(g.auto_dice) //Throw a dice
-			g.move_player(dice, i)          //Move correct player
-			g.apply_special_cases(i)        //Apply special cases
-
+			dice := throw_dice(g.auto_dice)  //Throw a dice
+			g.move_player(dice, i)           //Move correct player
+			g.apply_special_cases(i)         //Apply special cases
 			if g.players[i].position == 62 { //Check win
 				//win()
 				color.Green.Println("\nThe winner is ", g.players[i].letter, "!! \n")
 				g.winner = g.players[i].letter
 				break
 			}
-
 			if g.players[i].position > 62 { //Check passed
 				g.move_player(-6, i)
 			}
