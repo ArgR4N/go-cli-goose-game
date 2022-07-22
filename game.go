@@ -137,6 +137,14 @@ func (g *Game) print_table(dice int, p Player) {
 	not_player := false
 	if dice != 0 {
 		color.BgYellow.Printf("The dice is %o | Is the turn of %s \n\n", dice, p.letter)
+	} else {
+		switch dice < 0 {
+		case true:
+			color.BgRed.Printf("You move %o cases | Is the turn of %s \n\n", dice, p.letter)
+		case false:
+			color.BgGreen.Printf("You move %o cases | Is the turn of %s \n\n", dice, p.letter)
+
+		}
 	}
 	for index, elm := range g.table {
 		for i := 0; i < g.player_quant; i++ {
