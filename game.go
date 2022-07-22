@@ -114,22 +114,21 @@ func (g *Game) init() {
 
 //Game loop functions =>
 func print_case(index int, num int) {
-	if index+1 >= 10 {
-		if num != 0 {
-			if num < 0 {
-				color.BgRed.Printf(" %d ", index+1)
-			} else {
-				color.BgGreen.Printf(" %d ", index+1)
-			}
-		} else {
-			color.BgGray.Printf(" %d ", index+1)
-		}
-	} else {
-		if num != 0 {
-			color.BgRed.Printf(" 0%d ", index+1)
-		} else {
-			color.BgGray.Printf(" 0%d ", index+1)
-		}
+	output := ""
+	if index+1 < 10 {
+		output = "0"
+	}
+	switch num {
+	case 1:
+		color.BgHiGreen.Printf(" %s%d ", output, index+1)
+	case 2:
+		color.BgGreen.Printf(" %s%d ", output, index+1)
+	case -1:
+		color.BgHiRed.Printf(" %s%d ", output, index+1)
+	case -2:
+		color.BgRed.Printf(" %s%d ", output, index+1)
+	default:
+		color.BgGray.Printf(" %s%d ", output, index+1)
 	}
 }
 
