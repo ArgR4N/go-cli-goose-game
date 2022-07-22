@@ -22,6 +22,7 @@ type Game struct {
 	players   [4]Player
 	winner    string
 	auto_dice bool
+	turn_move bool
 }
 
 //Auxiliar functions =>
@@ -52,17 +53,15 @@ func (g *Game) get_player_quant() {
 }
 
 func get_random_case() int {
-
-	return 0
-
 	newCase := rand.Float64()
 	if newCase < 0.7 {
 		return 0
 	} else {
-		n := rand.Intn(4) - 2
+		n := 0
 		for n == 0 {
-			n = rand.Intn(4) - 2
+			n = rand.Intn(5) - 2
 		}
+		fmt.Println(n)
 		return n
 	}
 }
@@ -110,6 +109,8 @@ func (g *Game) init() {
 	//init table and players =>
 	g.init_table()
 	g.init_players()
+
+	g.turn_move = true
 }
 
 //Game loop functions =>
@@ -134,7 +135,7 @@ func print_case(index int, num int) {
 
 func (g *Game) print_table(dice int, p Player) {
 	not_player := false
-	if dice != 0 {
+	if g.turn_move { //Just in 'regular' turns
 		color.BgYellow.Printf("The dice is %o | Is the turn of %s \n\n", dice, p.letter)
 	} else {
 		switch dice < 0 {
@@ -168,7 +169,7 @@ func (g *Game) print_table(dice int, p Player) {
 func (p *Player) turns(op string) {
 	n := 1
 	if op == "sub" {
-		n = 1
+		n = -1
 	}
 	p.turn += n
 }
@@ -186,6 +187,10 @@ func throw_dice(auto bool) int {
 }
 
 func (g *Game) move_player(dice int, index int) {
+	if g.players[index].position+dice > 63 {
+		color.BgRed.Println("You passed the end for %o cases! ", g.players[index].position+dice-63)
+		dice = 63 - g.players[index].position + dice - 5
+	}
 	for i := 0; i < abs(dice); i++ {
 		if i != 0 { //Don´t wait in the first 'step'
 			time.Sleep(500 * time.Millisecond)
@@ -217,10 +222,10 @@ func (g *Game) apply_special_cases(index int) {
 	}
 	//g.apply_special_cases(index)
 	//TO DO
-	// -1 =>Pierde un turno
-	// -2 => Retrocede 2 casillas
-	// 1 => Gana un turno
-	// 2 => Avanza 3 casillas
+	// -1 =>Pierde un turno => p.turn -= 1
+	// -2 => Retrocede 2 casillas => mueve -2 casillas
+	// 1 => Gana un turno => Juega de nuevo (tira dado y mueve n casillas)
+	// 2 => Avanza 3 casillas => Mueve +3 casillas
 }
 
 func (g *Game) start_loop() {
@@ -236,11 +241,11 @@ func (g *Game) start_loop() {
 			dice := throw_dice(g.auto_dice) //Throw a dice
 			g.move_player(dice, i)          //Move correct player
 			g.apply_special_cases(i)        //Apply special cases
+
 			if g.players[i].position == 62 { //Check win
 				//win()
 				color.Green.Println("\nThe winner is ", g.players[i].letter, "!! \n")
 				g.winner = g.players[i].letter
-				g.print_table(0, Player{})
 				break
 			}
 
@@ -267,6 +272,6 @@ func main() {
 		game := Game{}                     //Create new game
 		game.init()                        //Init game values
 		game.start_loop()                  //Start game loop
-		game.ask_for_reset(&still_playing) //Ask for reset => end program or reset
+		game.ask_for_reset(&still_playing) //Ask for reset => End program or Reset
 	}
 }

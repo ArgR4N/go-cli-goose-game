@@ -1,12 +1,14 @@
 - Print of table (game ui) => 
 	- Spiral algorithm for print ⭕
-	- Style for each case (when empty or with n players in or special) ⭕
-	- Turns animations (dice and moves) ⭕
-	- change print case function ( better logic and colors )
+	- Style for each case (when  [ empty or with n players ⭕ in ] or [ special ✅ ]) ⭕
+	- Turns animations (moves) ✅
+	- change print case function ( better logic and colors ) ✅
+	- change print table function ( better logic and colors ) ⭕
 
 - Game loop (game function) =>
 	- Turns ✅
 	- Special cases ⭕
+	- Exceed the end ⭕
 
 -Extra =>
 	- ❗ Make tests for develop the sipral algorithm ⭕ 
