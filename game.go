@@ -189,7 +189,26 @@ func (g *Game) move_player(dice int, index int) {
 	}
 }
 
-func (g *Game) apply_special_cases(index int, player *Player) {
+func (g *Game) apply_special_cases(index int) {
+	g.turn_move = false
+	for !g.turn_move {
+		switch g.table[g.players[index].position] {
+		case -1:
+			g.players[index].turns("sub")
+			break
+		case -2:
+			g.move_player(-2, index)
+		case 1:
+			dice := throw_dice(true)
+			g.move_player(dice, index)
+		case 2:
+			g.move_player(2, index)
+		case g.table[g.players[index].position]:
+			break
+		}
+		g.turn_move = true
+	}
+	//g.apply_special_cases(index)
 	//TO DO
 	// -1 =>Pierde un turno
 	// -2 => Retrocede 2 casillas
@@ -202,19 +221,17 @@ func (g *Game) start_loop() {
 	for g.winner == "" {
 		//Turns =>
 		for i := 0; i < g.player_quant; i++ {
-			fmt.Println(g.players)
+			g.turn_move = true         // Know if the move is from an normal turn or ar special case
 			if g.players[i].turn < 1 { //Check turn
 				g.players[i].turns("sum")
 				continue
 			}
 			dice := throw_dice(g.auto_dice) //Throw a dice
 			g.move_player(dice, i)          //Move correct player
-
-			//g.apply_special_cases(i, &g.players[index])
-
+			g.apply_special_cases(i)        //Apply special cases
 			if g.players[i].position == 62 { //Check win
 				//win()
-				color.Green.Println("\nThe winner is ", g.players[i].letter, "!!")
+				color.Green.Println("\nThe winner is ", g.players[i].letter, "!! \n")
 				g.winner = g.players[i].letter
 				g.print_table(0, Player{})
 				break
