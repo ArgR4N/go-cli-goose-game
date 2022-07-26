@@ -3,11 +3,14 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	tm "github.com/buger/goterm"
 	"github.com/gookit/color"
 )
+
+var ops = map[string][]string{"Auto dice": {"Y", "N", "I"}, "Player quant": {"2", "3", "4"}}
 
 type Player struct {
 	letter   string
@@ -95,21 +98,57 @@ func (g *Game) init_players() {
 	}
 }
 
+func (g *Game) get_config(s string) {
+	//Print of prompt =>
+	input := ""
+	for input == "" {
+		fmt.Print(s, "? =>")
+		for index, char := range ops[s] {
+			b := ""  //beginning
+			e := "/" //end
+			if index == 0 {
+				b = " ["
+			} // i != len(ops[s])-1 // output = elm,
+			if index == len(ops[s])-1 {
+				e = "] : "
+			}
+			fmt.Print(b, char, e)
+		}
+		fmt.Scan(&input)
+		for i, elm := range ops[s] {
+			if input == elm {
+				break
+			} else if i == len(ops[s])-1 {
+				input = ""
+			}
+		}
+		if input == "I" {
+			fmt.Print("Info of the option goes here!")
+			input = "" //For reset prompt!
+		}
+	}
+	if s == "Auto dice" { //Provisional =>
+		g.auto_dice = input == "Y"
+	}
+	if s == "Player quant" {
+		inp, _ := strconv.Atoi(input)
+		g.player_quant = inp
+	}
+}
+
 func (g *Game) init() {
 	clear_terminal()
 	color.BgYellow.Println("Game configuration: ")
 
 	//Get configuration (player_quant, dificulty, auto_dice and show_table) =>
-	g.get_auto_dice()
-	//TO DO => g.get_show_table()
-	g.get_player_quant()
-	//TODO => get_dificulty( )
-
+	g.get_config("Auto dice")
+	g.get_config("Player quant")
+	//TO DO => g.get_config("Show table")
+	//TODO => g.get_config("Difficulty")
 	//init table and players =>
 	g.init_table()
 	g.init_players()
-
-	g.turn_move = true
+	clear_terminal()
 }
 
 //Game loop functions =>
