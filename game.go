@@ -61,15 +61,6 @@ func random_case() int {
 	}
 }
 
-func (g *Game) get_auto_dice() {
-	input := ""
-	for input != "Y" && input != "N" {
-		fmt.Print("\nAuto dice? [Y/N]: ")
-		fmt.Scan(&input)
-	}
-	g.auto_dice = input == "Y"
-}
-
 func (g *Game) init_table() {
 	for index := range g.table {
 		g.table[index] = get_random_case()
