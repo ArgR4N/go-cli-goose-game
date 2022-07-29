@@ -47,17 +47,6 @@ func get_sprial_array(arr [63]int) [63]int {
 }
 
 //Init functions =>
-func (g *Game) get_player_quant() {
-	fmt.Print("Number of player (2 - 4): ")
-	n := 0
-	fmt.Scan(&n)
-	for n < 2 || n > 4 {
-		fmt.Print("The number of players must be between 1 and 4: ")
-		fmt.Scan(&n)
-		fmt.Println() //New line
-	}
-	g.player_quant = n
-}
 
 func get_random_case() int {
 	newCase := rand.Float64()
