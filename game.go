@@ -48,7 +48,7 @@ func get_sprial_array(arr [63]int) [63]int {
 
 //Init functions =>
 
-func get_random_case() int {
+func random_case() int {
 	newCase := rand.Float64()
 	if newCase < 0.7 {
 		return 0
