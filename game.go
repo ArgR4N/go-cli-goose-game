@@ -63,7 +63,7 @@ func random_case() int {
 
 func (g *Game) init_table() {
 	for index := range g.table {
-		g.table[index] = get_random_case()
+		g.table[index] = random_case()
 	}
 }
 
@@ -83,7 +83,6 @@ func (g *Game) init_players() {
 }
 
 func (g *Game) get_config(s string) {
-	//Print of prompt =>
 	input := ""
 	for input == "" {
 		fmt.Print(s, "? =>")
@@ -123,13 +122,10 @@ func (g *Game) get_config(s string) {
 func (g *Game) init() {
 	clear_terminal()
 	color.BgYellow.Println("Game configuration: ")
-
-	//Get configuration (player_quant, dificulty, auto_dice and show_table) =>
 	g.get_config("Auto dice")
 	g.get_config("Player quant")
 	//TO DO => g.get_config("Show table")
 	//TODO => g.get_config("Difficulty")
-	//init table and players =>
 	g.init_table()
 	g.init_players()
 	clear_terminal()

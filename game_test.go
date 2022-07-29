@@ -13,6 +13,6 @@ func TestGetSpiralArray(t *testing.T) {
 	}
 
 	got := get_sprial_array([63]int{1})
-	want := [63]int{1}
+	want := [63]int{}
 	assertEqual(t, got, want)
 }
