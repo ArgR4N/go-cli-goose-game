@@ -67,18 +67,16 @@ func (g *Game) init_table() {
 	}
 }
 
-func (p *Player) init_player(name string) {
-	p.letter = name
-	p.turn = 1
-	p.position = 0
-}
-
 func (g *Game) init_players() {
-	name := ""
 	for i := 0; i < g.player_quant; i++ {
+		name := ""
 		fmt.Printf("\t Player %X letter: ", i+1)
 		fmt.Scan(&name)
-		g.players[i].init_player(name)
+		g.players[i] = Player{
+			letter:   name,
+			turn:     1,
+			position: 0,
+		}
 	}
 }
 
