@@ -42,6 +42,10 @@ func abs(n int) int {
 	return n
 }
 
+func get_sprial_array(arr [63]int) [63]int {
+	return [63]int{}
+}
+
 //Init functions =>
 func (g *Game) get_player_quant() {
 	fmt.Print("Number of player (2 - 4): ")
