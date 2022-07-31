@@ -81,40 +81,56 @@ func (g *Game) init_players() {
 }
 
 func (g *Game) get_config(s string) {
-	input := ""
-	for input == "" {
+	config_print := func(s string) {
 		fmt.Print(s, "? =>")
-		for index, char := range ops[s] {
-			b := ""  //beginning
-			e := "/" //end
-			if index == 0 {
-				b = " ["
-			} // i != len(ops[s])-1 // output = elm,
-			if index == len(ops[s])-1 {
-				e = "] : "
+		options := append(ops[s], "I")
+		fmt.Print(" [ ") //general beginning
+		for index, char := range options {
+			fmt.Print(char)
+			if index == len(options)-1 {
+				continue
 			}
-			fmt.Print(b, char, e)
+			fmt.Print(" / ")
 		}
+		fmt.Print(" ] : ") //general end
+	}
+	config_prompt := func(s string) string {
+		input := ""
 		fmt.Scan(&input)
-		for i, elm := range ops[s] {
+		options := append(ops[s], "I")
+		for i, elm := range options {
 			if input == elm {
 				break
-			} else if i == len(ops[s])-1 {
+			} else if i == len(options)-1 {
 				input = ""
 			}
 		}
-		if input == "I" {
+
+		return input
+	}
+	config_show_info := func(input *string) {
+		if *input == "I" {
 			fmt.Print("Info of the option goes here!")
-			input = "" //For reset prompt!
+			*input = ""
 		}
 	}
-	if s == "Auto dice" { //Provisional =>
-		g.auto_dice = input == "Y"
+	config_set_value := func(s string, input string) {
+		//Provisional =>
+		if s == "Auto dice" {
+			g.auto_dice = input == "Y"
+		}
+		if s == "Player quant" {
+			inp, _ := strconv.Atoi(input)
+			g.player_quant = inp
+		}
 	}
-	if s == "Player quant" {
-		inp, _ := strconv.Atoi(input)
-		g.player_quant = inp
+	input := ""
+	for input == "" {
+		config_print(s)
+		input = config_prompt(s)
+		config_show_info(&input)
 	}
+	config_set_value(s, input)
 }
 
 func (g *Game) init() {
