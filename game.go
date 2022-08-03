@@ -10,7 +10,10 @@ import (
 	"github.com/gookit/color"
 )
 
-var ops = map[string][]string{"Auto dice": {"Y", "N", "I"}, "Player quant": {"2", "3", "4"}}
+var ops = map[string][]string{
+	"Auto dice":    {"Y", "N"},
+	"Player quant": {"2", "3", "4"},
+}
 
 type Player struct {
 	letter   string
@@ -43,7 +46,8 @@ func abs(n int) int {
 }
 
 func get_sprial_array(arr [63]int) [63]int {
-	return [63]int{}
+
+	return arr
 }
 
 //Init functions =>
@@ -178,7 +182,7 @@ func (g *Game) print_table(dice int, p Player) {
 
 		}
 	}
-	for index, elm := range g.table {
+	for index := range get_sprial_array(g.table) {
 		for i := 0; i < g.player_quant; i++ {
 			if g.players[i].position == index && !not_player {
 				color.BgYellow.Printf(" %s ", g.players[i].letter)
@@ -187,7 +191,7 @@ func (g *Game) print_table(dice int, p Player) {
 			}
 		}
 		if !not_player {
-			print_case(index, elm)
+			print_case(index, g.table[index])
 			color.Print(" ")
 		}
 		if (index+1)%10 == 0 { //New line
@@ -239,7 +243,6 @@ func (g *Game) apply_special_cases(index int) {
 		switch g.table[g.players[index].position] {
 		case -1:
 			g.players[index].turns("sub")
-			break
 		case -2:
 			g.move_player(-2, index)
 		case 1:
@@ -247,8 +250,6 @@ func (g *Game) apply_special_cases(index int) {
 			g.move_player(dice, index)
 		case 2:
 			g.move_player(2, index)
-		case g.table[g.players[index].position]:
-			break
 		}
 		g.turn_move = true
 	}
@@ -298,4 +299,5 @@ func main() {
 		game.start_loop()                  //Start game loop
 		game.ask_for_reset(&still_playing) //Ask for reset => End program or Reset
 	}
+	clear_terminal()
 }
